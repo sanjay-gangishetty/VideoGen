@@ -1,0 +1,37 @@
+.generate-section {
+  margin-top: var(--spacing-2xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.generate-btn {
+  padding: var(--spacing-md) var(--spacing-3xl);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  min-width: 250px;
+  height: 56px;
+}
+
+.generate-btn svg {
+  transition: transform var(--transition-base);
+}
+
+.generate-btn:not(:disabled):hover svg {
+  transform: translateX(4px);
+}
+
+.generate-note {
+  margin-top: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-black-light);
+  max-width: 400px;
+}
+
+@media (max-width: 768px) {
+  .generate-btn {
+    min-width: 200px;
+    width: 100%;
+  }
+}
