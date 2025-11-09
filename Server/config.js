@@ -37,6 +37,13 @@ const config = {
       TIMEOUT: 60000, // 60 seconds
     },
 
+    // Kie.ai Configuration
+    KIE: {
+      API_KEY: 'your-kie-api-key-here',
+      API_ENDPOINT: 'https://api.kie.ai/v1',
+      TIMEOUT: 60000, // 60 seconds
+    },
+
     // Retry Configuration
     RETRY: {
       MAX_ATTEMPTS: 3,

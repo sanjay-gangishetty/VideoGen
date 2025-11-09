@@ -46,7 +46,7 @@ app.get('/', (req, res) => {
         },
       },
     },
-    availableServices: ['heygen', 'veo3'],
+    availableServices: ['heygen', 'veo3', 'kie'],
   });
 });
 
@@ -87,7 +87,7 @@ app.listen(PORT, () => {
   ├─ API Docs: http://localhost:${PORT}/
   └─ Videos API: http://localhost:${PORT}/api/videos
 
-  🎥 Available Services: heygen, veo3
+  🎥 Available Services: heygen, veo3, kie
 
   Press CTRL+C to stop
   `);

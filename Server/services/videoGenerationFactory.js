@@ -1,5 +1,6 @@
 const HeyGenService = require('./heygenService');
 const Veo3Service = require('./veo3Service');
+const KieService = require('./kieService');
 
 /**
  * Video Generation Factory
@@ -13,11 +14,12 @@ class VideoGenerationFactory {
   static services = {
     heygen: HeyGenService,
     veo3: Veo3Service,
+    kie: KieService,
   };
 
   /**
    * Create a video generation service instance
-   * @param {String} serviceName - Name of the service ('heygen', 'veo3')
+   * @param {String} serviceName - Name of the service ('heygen', 'veo3', 'kie')
    * @returns {BaseVideoService} - Service instance
    * @throws {Error} - If service is not supported
    */

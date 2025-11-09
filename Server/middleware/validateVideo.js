@@ -105,6 +105,55 @@ const validateCreateVideo = (req, res, next) => {
     }
   }
 
+  if (service.toLowerCase() === 'kie') {
+    // Kie.ai requires: prompt
+    if (!params.prompt) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required field: prompt',
+        message: 'Prompt is required for Kie.ai',
+      });
+    }
+
+    // Validate prompt length
+    if (params.prompt && params.prompt.length > 2000) {
+      return res.status(400).json({
+        success: false,
+        error: 'Prompt too long',
+        message: 'Prompt must be less than 2000 characters',
+      });
+    }
+
+    // Validate duration if provided
+    if (params.duration && (params.duration < 1 || params.duration > 60)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid duration',
+        message: 'Duration must be between 1 and 60 seconds',
+      });
+    }
+
+    // Validate aspect ratio if provided
+    const validAspectRatios = ['16:9', '9:16', '1:1'];
+    if (params.aspectRatio && !validAspectRatios.includes(params.aspectRatio)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid aspect ratio',
+        message: `Aspect ratio must be one of: ${validAspectRatios.join(', ')}`,
+      });
+    }
+
+    // Validate model if provided
+    const validModels = ['veo3.1-fast', 'veo3.1-standard'];
+    if (params.model && !validModels.includes(params.model)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid model',
+        message: `Model must be one of: ${validModels.join(', ')}`,
+      });
+    }
+  }
+
   // Validation passed
   console.log(`✅ Validation passed for service: ${service}`);
   next();
