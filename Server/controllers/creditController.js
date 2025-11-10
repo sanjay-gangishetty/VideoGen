@@ -2,14 +2,14 @@
  * Credit Controller
  *
  * Handles all credit-related operations including balance queries,
- * credit additions, deductions, and transaction history.
+ * credit additions, and deductions using Prisma ORM.
  *
- * NOTE: This controller uses mock user data until authentication is implemented.
+ * NOTE: This controller uses hardcoded user ID until authentication is implemented.
  * When auth is added, req.user will be populated by authentication middleware.
  */
 
 const User = require('../models/User');
-const Transaction = require('../models/Transaction');
+const Wallet = require('../models/Wallet');
 
 class CreditController {
   /**
@@ -20,29 +20,30 @@ class CreditController {
   async getUserCredits(req, res) {
     try {
       // TODO: Replace with req.user.id when authentication is implemented
-      const userId = req.userId || 'user123';
+      const userId = parseInt(req.userId) || 1;
 
       console.log(`💰 Getting credit balance for user: ${userId}`);
 
       const user = await User.findById(userId);
 
-      if (!user) {
+      if (!user || !user.wallet) {
         return res.status(404).json({
           success: false,
           error: 'User not found',
-          message: 'Unable to find user account'
+          message: 'Unable to find user account or wallet'
         });
       }
 
-      console.log(`✅ Credit balance retrieved: ${user.credits} credits`);
+      console.log(`✅ Credit balance retrieved: ${user.wallet.currentBalance} credits`);
 
       res.status(200).json({
         success: true,
         data: {
           userId: user.id,
-          credits: user.credits,
+          credits: user.wallet.currentBalance,
+          totalCreditsUsed: user.wallet.totalCreditsUsed,
           email: user.email,
-          lastUpdated: user.updatedAt
+          lastUpdated: user.wallet.updatedAt
         }
       });
     } catch (error) {
@@ -63,68 +64,46 @@ class CreditController {
   async deductCredits(req, res) {
     try {
       // TODO: Replace with req.user.id when authentication is implemented
-      const userId = req.userId || 'user123';
+      const userId = parseInt(req.userId) || 1;
       const { amount, reason } = req.body;
 
       console.log(`➖ Deducting ${amount} credits for user: ${userId} - Reason: ${reason}`);
 
-      // Get current user
-      const user = await User.findById(userId);
+      // Deduct credits using Wallet model (handles validation atomically)
+      const result = await Wallet.deductCredits(userId, amount);
 
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          error: 'User not found',
-          message: 'Unable to find user account'
-        });
-      }
-
-      // Check if user has sufficient credits
-      if (user.credits < amount) {
-        console.log(`⚠️  Insufficient credits - Required: ${amount}, Available: ${user.credits}`);
-        return res.status(402).json({
-          success: false,
-          error: 'Insufficient credits',
-          message: `This operation requires ${amount} credits, but you only have ${user.credits} credits`,
-          data: {
-            required: amount,
-            available: user.credits,
-            shortage: amount - user.credits
-          }
-        });
-      }
-
-      // Calculate new balance
-      const newBalance = user.credits - amount;
-
-      // Update user credits
-      await User.updateCredits(userId, newBalance);
-
-      // Create transaction record
-      const transaction = await Transaction.create({
-        userId,
-        type: 'debit',
-        amount,
-        reason,
-        balanceAfter: newBalance
-      });
-
-      console.log(`✅ Credits deducted successfully - New balance: ${newBalance}`);
+      console.log(`✅ Credits deducted successfully - New balance: ${result.currentBalance}`);
 
       res.status(200).json({
         success: true,
         message: 'Credits deducted successfully',
         data: {
-          transactionId: transaction.id,
-          previousBalance: user.credits,
+          previousBalance: result.previousBalance,
           amountDeducted: amount,
-          newBalance: newBalance,
+          newBalance: result.currentBalance,
+          totalCreditsUsed: result.totalCreditsUsed,
           reason: reason,
-          timestamp: transaction.timestamp
+          timestamp: result.updatedAt
         }
       });
     } catch (error) {
       console.error('❌ Error deducting credits:', error);
+
+      // Handle insufficient credits error
+      if (error.message === 'Insufficient credits') {
+        const wallet = await Wallet.findByUserId(userId);
+        return res.status(402).json({
+          success: false,
+          error: 'Insufficient credits',
+          message: `This operation requires ${amount} credits, but you only have ${wallet?.currentBalance || 0} credits`,
+          data: {
+            required: amount,
+            available: wallet?.currentBalance || 0,
+            shortage: amount - (wallet?.currentBalance || 0)
+          }
+        });
+      }
+
       res.status(500).json({
         success: false,
         error: error.message,
@@ -141,49 +120,26 @@ class CreditController {
   async addCredits(req, res) {
     try {
       // TODO: Replace with req.user.id when authentication is implemented
-      const userId = req.userId || 'user123';
+      const userId = parseInt(req.userId) || 1;
       const { amount, reason } = req.body;
 
       console.log(`➕ Adding ${amount} credits for user: ${userId} - Reason: ${reason}`);
 
-      // Get current user
-      const user = await User.findById(userId);
+      // Add credits using Wallet model
+      const result = await Wallet.addCredits(userId, amount);
 
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          error: 'User not found',
-          message: 'Unable to find user account'
-        });
-      }
-
-      // Calculate new balance
-      const newBalance = user.credits + amount;
-
-      // Update user credits
-      await User.updateCredits(userId, newBalance);
-
-      // Create transaction record
-      const transaction = await Transaction.create({
-        userId,
-        type: 'credit',
-        amount,
-        reason,
-        balanceAfter: newBalance
-      });
-
-      console.log(`✅ Credits added successfully - New balance: ${newBalance}`);
+      console.log(`✅ Credits added successfully - New balance: ${result.currentBalance}`);
 
       res.status(200).json({
         success: true,
         message: 'Credits added successfully',
         data: {
-          transactionId: transaction.id,
-          previousBalance: user.credits,
+          previousBalance: result.previousBalance,
           amountAdded: amount,
-          newBalance: newBalance,
+          newBalance: result.currentBalance,
+          totalCreditsUsed: result.totalCreditsUsed,
           reason: reason,
-          timestamp: transaction.timestamp
+          timestamp: result.updatedAt
         }
       });
     } catch (error) {
@@ -192,48 +148,6 @@ class CreditController {
         success: false,
         error: error.message,
         message: 'Failed to add credits'
-      });
-    }
-  }
-
-  /**
-   * Get credit transaction history
-   * @route GET /api/credits/history
-   * @access Public (TODO: Add authentication middleware in next phase)
-   */
-  async getCreditHistory(req, res) {
-    try {
-      // TODO: Replace with req.user.id when authentication is implemented
-      const userId = req.userId || 'user123';
-      const limit = parseInt(req.query.limit) || 50;
-      const offset = parseInt(req.query.offset) || 0;
-
-      console.log(`📊 Getting credit history for user: ${userId} (limit: ${limit}, offset: ${offset})`);
-
-      // Get transactions
-      const transactions = await Transaction.findByUserId(userId, { limit, offset });
-      const totalCount = await Transaction.countByUserId(userId);
-
-      console.log(`✅ Retrieved ${transactions.length} transactions (total: ${totalCount})`);
-
-      res.status(200).json({
-        success: true,
-        data: {
-          transactions,
-          pagination: {
-            total: totalCount,
-            limit,
-            offset,
-            hasMore: offset + transactions.length < totalCount
-          }
-        }
-      });
-    } catch (error) {
-      console.error('❌ Error getting credit history:', error);
-      res.status(500).json({
-        success: false,
-        error: error.message,
-        message: 'Failed to retrieve credit history'
       });
     }
   }

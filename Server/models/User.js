@@ -1,78 +1,133 @@
 /**
  * User Model
- *
- * This is a placeholder model structure until database integration.
- * Replace the mock implementation with actual database queries when ready.
+ * Prisma-based user operations
  */
 
-class User {
-  constructor() {
-    // Mock in-memory user storage
-    this.users = new Map([
-      ['user123', {
-        id: 'user123',
-        email: 'test@example.com',
-        credits: 100,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }]
-    ]);
-  }
+const { PrismaClient } = require('../generated/prisma');
+const prisma = new PrismaClient();
 
+class User {
   /**
-   * Find user by ID
-   * @param {string} userId - User ID
-   * @returns {Promise<Object|null>} User object or null
+   * Find user by ID with wallet relation
+   * @param {number} userId - User ID
+   * @returns {Promise<Object|null>} User object with wallet or null
    */
   async findById(userId) {
-    console.log('⚠️  DATABASE NOT IMPLEMENTED - Using mock user data');
-
-    const user = this.users.get(userId);
-    if (!user) {
-      return null;
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { wallet: true }
+      });
+      return user;
+    } catch (error) {
+      console.error('Error finding user:', error);
+      throw error;
     }
-
-    return { ...user }; // Return copy to prevent direct modification
   }
 
   /**
-   * Update user credits
-   * @param {string} userId - User ID
-   * @param {number} newBalance - New credit balance
-   * @returns {Promise<Object>} Updated user object
+   * Find user by email
+   * @param {string} email - User email
+   * @returns {Promise<Object|null>} User object or null
    */
-  async updateCredits(userId, newBalance) {
-    console.log('⚠️  DATABASE NOT IMPLEMENTED - Using mock user data');
-
-    const user = this.users.get(userId);
-    if (!user) {
-      throw new Error('User not found');
+  async findByEmail(email) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email },
+        include: { wallet: true }
+      });
+      return user;
+    } catch (error) {
+      console.error('Error finding user by email:', error);
+      throw error;
     }
-
-    user.credits = newBalance;
-    user.updatedAt = new Date();
-
-    return { ...user };
   }
 
   /**
-   * Create a new user (for future use)
+   * Find user by Google ID
+   * @param {string} googleId - Google OAuth ID
+   * @returns {Promise<Object|null>} User object or null
+   */
+  async findByGoogleId(googleId) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { googleId },
+        include: { wallet: true }
+      });
+      return user;
+    } catch (error) {
+      console.error('Error finding user by Google ID:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a new user with wallet (atomic transaction)
    * @param {Object} userData - User data
-   * @returns {Promise<Object>} Created user object
+   * @returns {Promise<Object>} Created user object with wallet
    */
   async create(userData) {
-    console.log('⚠️  DATABASE NOT IMPLEMENTED - Using mock user data');
+    try {
+      const user = await prisma.user.create({
+        data: {
+          email: userData.email,
+          name: userData.name || null,
+          phone: userData.phone || null,
+          image: userData.image || null,
+          googleId: userData.googleId || null,
+          accessToken: userData.accessToken || null,
+          refreshToken: userData.refreshToken || null,
+          wallet: {
+            create: {
+              currentBalance: userData.initialCredits || 100,
+              totalCreditsUsed: 0
+            }
+          }
+        },
+        include: { wallet: true }
+      });
+      return user;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+  }
 
-    const newUser = {
-      id: userData.id || `user${Date.now()}`,
-      email: userData.email,
-      credits: userData.credits || 0,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+  /**
+   * Update user profile
+   * @param {number} userId - User ID
+   * @param {Object} updateData - Data to update
+   * @returns {Promise<Object>} Updated user object
+   */
+  async update(userId, updateData) {
+    try {
+      const user = await prisma.user.update({
+        where: { id: userId },
+        data: updateData,
+        include: { wallet: true }
+      });
+      return user;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  }
 
-    this.users.set(newUser.id, newUser);
-    return { ...newUser };
+  /**
+   * Delete user (cascades to wallet and video logs)
+   * @param {number} userId - User ID
+   * @returns {Promise<Object>} Deleted user object
+   */
+  async delete(userId) {
+    try {
+      const user = await prisma.user.delete({
+        where: { id: userId }
+      });
+      return user;
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      throw error;
+    }
   }
 }
 

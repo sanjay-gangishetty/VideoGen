@@ -9,7 +9,10 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node test/run.js",
+    "test:user": "node test/models/user.test.js",
+    "test:wallet": "node test/models/wallet.test.js",
+    "test:credit": "node test/controllers/credit.test.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",

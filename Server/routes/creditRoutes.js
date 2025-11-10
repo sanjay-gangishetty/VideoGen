@@ -10,7 +10,7 @@
 const express = require('express');
 const router = express.Router();
 const creditController = require('../controllers/creditController');
-const { validateCreditOperation, validateCreditHistory } = require('../middleware/validateCredit');
+const { validateCreditOperation } = require('../middleware/validateCredit');
 
 /**
  * @route   GET /api/credits
@@ -34,13 +34,5 @@ router.post('/deduct', validateCreditOperation, creditController.deductCredits);
  * @access  Public (TODO: Add authentication middleware in next phase)
  */
 router.post('/add', validateCreditOperation, creditController.addCredits);
-
-/**
- * @route   GET /api/credits/history
- * @desc    Get credit transaction history
- * @query   { limit: number, offset: number }
- * @access  Public (TODO: Add authentication middleware in next phase)
- */
-router.get('/history', validateCreditHistory, creditController.getCreditHistory);
 
 module.exports = router;
