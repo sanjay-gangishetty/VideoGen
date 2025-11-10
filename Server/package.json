@@ -9,13 +9,21 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "prisma:push": "prisma db push",
+    "prisma:seed": "prisma db seed"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.0",
     "axios": "^1.13.1",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^4.18.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "prisma": "^6.19.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

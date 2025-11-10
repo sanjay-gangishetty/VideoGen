@@ -3,9 +3,12 @@
  * Central configuration file for all app-wide settings
  */
 
+// Load environment variables from .env file
+require('dotenv').config();
+
 const config = {
   // Server settings
-  PORT: 3000,
+  PORT: parseInt(process.env.PORT, 10) || 3000,
 
   // Environment
   NODE_ENV: process.env.NODE_ENV || 'development',
@@ -24,24 +27,24 @@ const config = {
   VIDEO_SERVICES: {
     // HeyGen Configuration
     HEYGEN: {
-      API_KEY: 'your-heygen-api-key-here',
-      API_ENDPOINT: 'https://api.heygen.com/v1',
-      TIMEOUT: 30000, // 30 seconds
+      API_KEY: process.env.HEYGEN_API_KEY || 'your-heygen-api-key-here',
+      API_ENDPOINT: process.env.HEYGEN_API_ENDPOINT || 'https://api.heygen.com/v1',
+      TIMEOUT: parseInt(process.env.HEYGEN_TIMEOUT, 10) || 30000, // 30 seconds
     },
 
     // Google Veo 3 Configuration
     VEO3: {
-      API_KEY: 'your-google-veo3-api-key-here',
-      API_ENDPOINT: 'https://generativelanguage.googleapis.com/v1',
-      PROJECT_ID: 'your-project-id',
-      TIMEOUT: 60000, // 60 seconds
+      API_KEY: process.env.VEO3_API_KEY || 'your-google-veo3-api-key-here',
+      API_ENDPOINT: process.env.VEO3_API_ENDPOINT || 'https://generativelanguage.googleapis.com/v1',
+      PROJECT_ID: process.env.VEO3_PROJECT_ID || 'your-project-id',
+      TIMEOUT: parseInt(process.env.VEO3_TIMEOUT, 10) || 60000, // 60 seconds
     },
 
     // Kie.ai Configuration
     KIE: {
-      API_KEY: 'your-kie-api-key-here',
-      API_ENDPOINT: 'https://api.kie.ai/v1',
-      TIMEOUT: 60000, // 60 seconds
+      API_KEY: process.env.KIE_API_KEY || 'your-kie-api-key-here',
+      API_ENDPOINT: process.env.KIE_API_ENDPOINT || 'https://api.kie.ai/v1',
+      TIMEOUT: parseInt(process.env.KIE_TIMEOUT, 10) || 60000, // 60 seconds
     },
 
     // Retry Configuration
