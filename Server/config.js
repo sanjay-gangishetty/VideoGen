@@ -55,6 +55,23 @@ const config = {
     // Logging
     ENABLE_LOGGING: true,
   },
+
+  // Credit System Configuration
+  CREDITS: {
+    // Default credits for new users
+    DEFAULT_CREDITS: 100,
+
+    // Video generation costs by service
+    VIDEO_COSTS: {
+      heygen: 10,
+      veo3: 15,
+      kie: 5,
+    },
+
+    // Credit operation limits
+    MAX_CREDITS_PER_OPERATION: 1000000,
+    MIN_CREDITS_FOR_VIDEO: 5, // Minimum required to generate any video
+  },
 };
 
 module.exports = config;

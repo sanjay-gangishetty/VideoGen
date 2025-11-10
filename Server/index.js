@@ -5,6 +5,7 @@ const config = require('./config');
 
 // Import routes
 const videoRoutes = require('./routes/videoRoutes');
+const creditRoutes = require('./routes/creditRoutes');
 
 // Initialize Express app
 const app = express();
@@ -44,6 +45,12 @@ app.get('/', (req, res) => {
           download: 'GET /api/videos/:id/download',
           cancel: 'DELETE /api/videos/:id',
         },
+        credits: {
+          balance: 'GET /api/credits',
+          deduct: 'POST /api/credits/deduct',
+          add: 'POST /api/credits/add',
+          history: 'GET /api/credits/history',
+        },
       },
     },
     availableServices: ['heygen', 'veo3', 'kie'],
@@ -52,6 +59,7 @@ app.get('/', (req, res) => {
 
 // API Routes
 app.use('/api/videos', videoRoutes);
+app.use('/api/credits', creditRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -85,9 +93,11 @@ app.listen(PORT, () => {
   📋 Endpoints:
   ├─ Health: http://localhost:${PORT}/health
   ├─ API Docs: http://localhost:${PORT}/
-  └─ Videos API: http://localhost:${PORT}/api/videos
+  ├─ Videos API: http://localhost:${PORT}/api/videos
+  └─ Credits API: http://localhost:${PORT}/api/credits
 
   🎥 Available Services: heygen, veo3, kie
+  💰 Credit System: Enabled
 
   Press CTRL+C to stop
   `);
