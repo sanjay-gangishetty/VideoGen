@@ -5,19 +5,31 @@ import ImageUpload from './components/ImageUpload';
 import VideoTypeSelector from './components/VideoTypeSelector';
 import CustomizationPanel from './components/CustomizationPanel';
 import GenerateButton from './components/GenerateButton';
+import LoginPromptModal from './components/LoginPromptModal';
+import { useAuth } from './context/AuthContext';
 
 function App() {
+  const { isAuthenticated } = useAuth();
   const [uploadedImages, setUploadedImages] = useState([]);
   const [selectedVideoType, setSelectedVideoType] = useState(null);
   const [customization, setCustomization] = useState({});
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleGenerate = () => {
+    // Check authentication first
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    // Validate uploaded images
     if (!uploadedImages.length) {
       alert('Please upload at least one image');
       return;
     }
 
+    // Validate video type selection
     if (!selectedVideoType) {
       alert('Please select a video generation type');
       return;
@@ -73,6 +85,12 @@ function App() {
           <p className="footer-text">VideoGen - AI-Powered Video Generation</p>
         </div>
       </footer>
+
+      {/* Login Prompt Modal */}
+      <LoginPromptModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
     </div>
   );
 }
