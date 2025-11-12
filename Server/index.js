@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const session = require('express-session');
 const config = require('./config');
 const passport = require('./config/passport');
+const { initializeDatabase } = require('./db/init');
+const { disconnectPrisma } = require('./db/prisma');
 
 // Import routes
 const videoRoutes = require('./routes/videoRoutes');
@@ -107,10 +109,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
-const PORT = config.PORT;
-app.listen(PORT, () => {
-  console.log(`
+// Start server function
+async function startServer() {
+  // Initialize database before starting the server
+  await initializeDatabase();
+
+  const PORT = config.PORT;
+  const server = app.listen(PORT, () => {
+    console.log(`
 ╔════════════════════════════════════════╗
 ║   ${config.APP_NAME}           ║
 ╚════════════════════════════════════════╝
@@ -130,5 +136,36 @@ app.listen(PORT, () => {
   🔐 Authentication: Google OAuth ${config.AUTH.TEST_MODE ? '(TEST MODE)' : '(Enabled)'}
 
   Press CTRL+C to stop
-  `);
+    `);
+  });
+
+  // Graceful shutdown handlers
+  const shutdown = async (signal) => {
+    console.log(`\n${signal} received. Starting graceful shutdown...`);
+
+    server.close(async () => {
+      console.log('HTTP server closed');
+
+      // Disconnect Prisma client
+      await disconnectPrisma();
+
+      console.log('Graceful shutdown completed');
+      process.exit(0);
+    });
+
+    // Force shutdown after 10 seconds
+    setTimeout(() => {
+      console.error('Forced shutdown after timeout');
+      process.exit(1);
+    }, 10000);
+  };
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
+}
+
+// Start the server
+startServer().catch((error) => {
+  console.error('Failed to start server:', error);
+  process.exit(1);
 });

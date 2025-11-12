@@ -3,8 +3,8 @@
  * Prisma-based wallet/credit operations
  */
 
-const { PrismaClient } = require('../generated/prisma');
-const prisma = new PrismaClient();
+const { getPrismaClient } = require('../db/prisma');
+const prisma = getPrismaClient();
 
 class Wallet {
   /**

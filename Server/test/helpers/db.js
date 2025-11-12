@@ -3,10 +3,10 @@
  * Provides Prisma client and cleanup utilities for tests
  */
 
-const { PrismaClient } = require('../../generated/prisma');
+const { getPrismaClient, disconnectPrisma } = require('../../db/prisma');
 
-// Singleton Prisma client for tests
-const prisma = new PrismaClient();
+// Use shared Prisma client for tests
+const prisma = getPrismaClient();
 
 /**
  * Clean up test data (delete specific user and related data)
@@ -48,7 +48,7 @@ async function cleanupUserByEmail(email) {
  * Disconnect Prisma client
  */
 async function disconnect() {
-  await prisma.$disconnect();
+  await disconnectPrisma();
 }
 
 module.exports = {
