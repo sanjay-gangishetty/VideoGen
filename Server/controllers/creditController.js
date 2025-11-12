@@ -4,8 +4,8 @@
  * Handles all credit-related operations including balance queries,
  * credit additions, and deductions using Prisma ORM.
  *
- * NOTE: This controller uses hardcoded user ID until authentication is implemented.
- * When auth is added, req.user will be populated by authentication middleware.
+ * NOTE: req.user is populated by authentication middleware.
+ * In TEST_MODE, a default user (id=1) is used for unauthenticated requests.
  */
 
 const User = require('../models/User');
@@ -15,12 +15,11 @@ class CreditController {
   /**
    * Get current user's credit balance
    * @route GET /api/credits
-   * @access Public (TODO: Add authentication middleware in next phase)
+   * @access Private (Requires authentication, respects TEST_MODE)
    */
   async getUserCredits(req, res) {
     try {
-      // TODO: Replace with req.user.id when authentication is implemented
-      const userId = parseInt(req.userId) || 1;
+      const userId = req.user.id;
 
       console.log(`💰 Getting credit balance for user: ${userId}`);
 
@@ -59,12 +58,11 @@ class CreditController {
   /**
    * Deduct credits from user account
    * @route POST /api/credits/deduct
-   * @access Public (TODO: Add authentication middleware in next phase)
+   * @access Private (Requires authentication, respects TEST_MODE)
    */
   async deductCredits(req, res) {
     try {
-      // TODO: Replace with req.user.id when authentication is implemented
-      const userId = parseInt(req.userId) || 1;
+      const userId = req.user.id;
       const { amount, reason } = req.body;
 
       console.log(`➖ Deducting ${amount} credits for user: ${userId} - Reason: ${reason}`);
@@ -115,12 +113,11 @@ class CreditController {
   /**
    * Add credits to user account
    * @route POST /api/credits/add
-   * @access Public (TODO: Add authentication middleware in next phase)
+   * @access Private (Requires authentication, respects TEST_MODE)
    */
   async addCredits(req, res) {
     try {
-      // TODO: Replace with req.user.id when authentication is implemented
-      const userId = parseInt(req.userId) || 1;
+      const userId = req.user.id;
       const { amount, reason } = req.body;
 
       console.log(`➕ Adding ${amount} credits for user: ${userId} - Reason: ${reason}`);

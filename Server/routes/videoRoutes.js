@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const videoController = require('../controllers/videoController');
+const { requireAuth } = require('../middleware/authMiddleware');
 const {
   validateCreateVideo,
   validateVideoId,
@@ -15,7 +16,7 @@ const {
 /**
  * @route   POST /api/videos
  * @desc    Create a new video generation job
- * @access  Public (TODO: Add authentication middleware)
+ * @access  Private (Requires authentication, respects TEST_MODE)
  * @body    {
  *            service: 'heygen' | 'veo3',
  *            ...serviceSpecificParams
@@ -25,12 +26,12 @@ const {
  *            data: { videoId, status, service }
  *          }
  */
-router.post('/', validateCreateVideo, videoController.createVideo);
+router.post('/', requireAuth, validateCreateVideo, videoController.createVideo);
 
 /**
  * @route   GET /api/videos
  * @desc    Get all videos with pagination and filters
- * @access  Public (TODO: Add authentication middleware)
+ * @access  Private (Requires authentication, respects TEST_MODE)
  * @query   {
  *            page: number,
  *            limit: number,
@@ -42,39 +43,39 @@ router.post('/', validateCreateVideo, videoController.createVideo);
  *            data: { videos: [], pagination: {} }
  *          }
  */
-router.get('/', validateListVideos, videoController.listVideos);
+router.get('/', requireAuth, validateListVideos, videoController.listVideos);
 
 /**
  * @route   GET /api/videos/:id
  * @desc    Get video status and metadata by ID
- * @access  Public (TODO: Add authentication middleware)
+ * @access  Private (Requires authentication, respects TEST_MODE)
  * @param   {string} id - Video ID
  * @returns {
  *            success: true,
  *            data: { videoId, status, service, progress, ... }
  *          }
  */
-router.get('/:id', validateVideoId, videoController.getVideoStatus);
+router.get('/:id', requireAuth, validateVideoId, videoController.getVideoStatus);
 
 /**
  * @route   GET /api/videos/:id/download
  * @desc    Download completed video by ID
- * @access  Public (TODO: Add authentication middleware)
+ * @access  Private (Requires authentication, respects TEST_MODE)
  * @param   {string} id - Video ID
  * @returns Video file stream or redirect to video URL
  */
-router.get('/:id/download', validateVideoId, videoController.downloadVideo);
+router.get('/:id/download', requireAuth, validateVideoId, videoController.downloadVideo);
 
 /**
  * @route   DELETE /api/videos/:id
  * @desc    Cancel ongoing video generation (optional feature)
- * @access  Public (TODO: Add authentication middleware)
+ * @access  Private (Requires authentication, respects TEST_MODE)
  * @param   {string} id - Video ID
  * @returns {
  *            success: true,
  *            data: { videoId, status: 'cancelled' }
  *          }
  */
-router.delete('/:id', validateVideoId, videoController.cancelVideo);
+router.delete('/:id', requireAuth, validateVideoId, videoController.cancelVideo);
 
 module.exports = router;

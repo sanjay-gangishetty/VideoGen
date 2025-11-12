@@ -10,29 +10,30 @@
 const express = require('express');
 const router = express.Router();
 const creditController = require('../controllers/creditController');
+const { requireAuth } = require('../middleware/authMiddleware');
 const { validateCreditOperation } = require('../middleware/validateCredit');
 
 /**
  * @route   GET /api/credits
  * @desc    Get current user's credit balance
- * @access  Public (TODO: Add authentication middleware in next phase)
+ * @access  Private (Requires authentication, respects TEST_MODE)
  */
-router.get('/', creditController.getUserCredits);
+router.get('/', requireAuth, creditController.getUserCredits);
 
 /**
  * @route   POST /api/credits/deduct
  * @desc    Deduct credits from user account
  * @body    { amount: number, reason: string }
- * @access  Public (TODO: Add authentication middleware in next phase)
+ * @access  Private (Requires authentication, respects TEST_MODE)
  */
-router.post('/deduct', validateCreditOperation, creditController.deductCredits);
+router.post('/deduct', requireAuth, validateCreditOperation, creditController.deductCredits);
 
 /**
  * @route   POST /api/credits/add
  * @desc    Add credits to user account
  * @body    { amount: number, reason: string }
- * @access  Public (TODO: Add authentication middleware in next phase)
+ * @access  Private (Requires authentication, respects TEST_MODE)
  */
-router.post('/add', validateCreditOperation, creditController.addCredits);
+router.post('/add', requireAuth, validateCreditOperation, creditController.addCredits);
 
 module.exports = router;
