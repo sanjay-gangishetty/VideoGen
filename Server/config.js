@@ -64,6 +64,9 @@ const config = {
     // Default credits for new users
     DEFAULT_CREDITS: 100,
 
+    // Initial credits for new users (via OAuth signup)
+    INITIAL_CREDITS: parseInt(process.env.INITIAL_CREDITS, 10) || 10,
+
     // Video generation costs by service
     VIDEO_COSTS: {
       heygen: 10,
@@ -74,6 +77,24 @@ const config = {
     // Credit operation limits
     MAX_CREDITS_PER_OPERATION: 1000000,
     MIN_CREDITS_FOR_VIDEO: 5, // Minimum required to generate any video
+  },
+
+  // Authentication Configuration
+  AUTH: {
+    // Google OAuth
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '',
+    GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/auth/google/callback',
+
+    // Session
+    SESSION_SECRET: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+    SESSION_MAX_AGE: 7 * 24 * 60 * 60 * 1000, // 7 days
+
+    // Frontend URL for redirects
+    FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
+
+    // Test mode - allows unauthenticated requests when true
+    TEST_MODE: process.env.TEST_MODE === 'true',
   },
 };
 
