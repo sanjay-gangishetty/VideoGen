@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -7,9 +8,10 @@ import VideoTypeSelector from './components/VideoTypeSelector';
 import CustomizationPanel from './components/CustomizationPanel';
 import GenerateButton from './components/GenerateButton';
 import LoginPromptModal from './components/LoginPromptModal';
+import Wallet from './pages/Wallet';
 import { useAuth } from './context/AuthContext';
 
-function App() {
+function HomePage() {
   const { isAuthenticated } = useAuth();
   const [uploadedImages, setUploadedImages] = useState([]);
   const [selectedVideoType, setSelectedVideoType] = useState(null);
@@ -55,9 +57,7 @@ function App() {
   const isGenerateDisabled = !uploadedImages.length || !selectedVideoType;
 
   return (
-    <div className="app">
-      <Navbar />
-
+    <>
       <main className="main-content">
         <Hero />
 
@@ -87,6 +87,18 @@ function App() {
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
       />
+    </>
+  );
+}
+
+function App() {
+  return (
+    <div className="app">
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/wallet" element={<Wallet />} />
+      </Routes>
     </div>
   );
 }

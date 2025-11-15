@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
@@ -52,7 +53,9 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-container container">
         <div className="navbar-brand">
-          <h1 className="navbar-logo">VideoGen</h1>
+          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <h1 className="navbar-logo">VideoGen</h1>
+          </Link>
         </div>
 
         <div className="navbar-right">
@@ -71,6 +74,24 @@ const Navbar = () => {
               <div className="navbar-loading">Loading...</div>
             ) : isAuthenticated && user ? (
               <div className="navbar-user">
+                <Link to="/wallet" style={{ textDecoration: 'none' }}>
+                  <button
+                    className="btn btn-wallet"
+                    style={{
+                      backgroundColor: '#8B5CF6',
+                      color: 'white',
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      marginRight: '12px',
+                    }}
+                  >
+                    💼 Wallet
+                  </button>
+                </Link>
                 <button
                   className="btn btn-add-credits"
                   onClick={handleAddCredits}

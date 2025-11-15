@@ -1,0 +1,219 @@
+.wallet-page {
+  min-height: 100vh;
+  padding: 2rem 0;
+  background: linear-gradient(135deg, var(--black-primary) 0%, var(--black-light) 100%);
+}
+
+.wallet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.wallet-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--white-primary);
+  margin: 0;
+}
+
+/* Balance Card */
+.balance-card {
+  background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%);
+  padding: 2.5rem;
+  margin-bottom: 3rem;
+  border: none;
+  box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
+}
+
+.balance-label {
+  font-size: 1rem;
+  color: var(--white-secondary);
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+
+.balance-amount {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--white-primary);
+}
+
+/* Transaction Section */
+.transaction-section {
+  margin-top: 2rem;
+}
+
+.transaction-section h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--white-primary);
+  margin-bottom: 1.5rem;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.loading-spinner p {
+  color: var(--white-secondary);
+  margin-top: 1rem;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--black-light);
+  border: 2px dashed rgba(139, 92, 246, 0.3);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-text {
+  font-size: 1.25rem;
+  color: var(--white-secondary);
+  margin-bottom: 1.5rem;
+}
+
+/* Transactions Table */
+.transactions-table-wrapper {
+  background: var(--black-light);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.transactions-table thead {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.transactions-table th {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--purple-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.transactions-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s ease;
+}
+
+.transactions-table tbody tr:hover {
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.transactions-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.transactions-table td {
+  padding: 1.25rem 1.5rem;
+  color: var(--white-primary);
+  font-size: 0.95rem;
+}
+
+.credits-cell {
+  color: var(--purple-light);
+  font-weight: 600;
+}
+
+.payment-gateway {
+  color: var(--white-secondary);
+  font-size: 0.875rem;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.375rem 0.875rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-completed {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.status-pending {
+  background: rgba(234, 179, 8, 0.2);
+  color: #fbbf24;
+}
+
+.status-failed {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.status-refunded {
+  background: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+}
+
+/* Load More Section */
+.load-more-section {
+  padding: 1.5rem;
+  text-align: center;
+  background: rgba(139, 92, 246, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.total-transactions {
+  color: var(--white-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .wallet-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .wallet-header h1 {
+    font-size: 2rem;
+  }
+
+  .balance-card {
+    padding: 1.5rem;
+  }
+
+  .balance-amount {
+    font-size: 2rem;
+  }
+
+  .transactions-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .transactions-table {
+    min-width: 600px;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+  }
+}

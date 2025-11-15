@@ -138,6 +138,35 @@ export const fetchVideoStatus = async (videoId) => {
   return await apiFetch(`/api/videos/${videoId}`);
 };
 
+/**
+ * Fetch payment history with pagination
+ * @param {number} limit - Number of records to fetch
+ * @param {number} offset - Number of records to skip
+ * @returns {Promise<object>} Payment history data
+ */
+export const fetchPaymentHistory = async (limit = 20, offset = 0) => {
+  try {
+    const queryString = new URLSearchParams({ limit, offset }).toString();
+    const data = await apiFetch(`/api/payment/history?${queryString}`);
+    return data.data;
+  } catch (error) {
+    console.error('Error fetching payment history:', error);
+    return { payments: [], total: 0, hasMore: false };
+  }
+};
+
+/**
+ * Create Stripe checkout session for credit purchase
+ * @param {number} amount - Amount in credits to purchase
+ * @returns {Promise<object>} Checkout session URL
+ */
+export const createCheckoutSession = async (amount) => {
+  return await apiFetch('/api/payment/checkout', {
+    method: 'POST',
+    body: JSON.stringify({ amount }),
+  });
+};
+
 export default {
   loginWithGoogle,
   fetchUser,
@@ -147,4 +176,6 @@ export default {
   createVideo,
   fetchVideos,
   fetchVideoStatus,
+  fetchPaymentHistory,
+  createCheckoutSession,
 };
