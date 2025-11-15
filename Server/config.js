@@ -96,6 +96,42 @@ const config = {
     // Test mode - allows unauthenticated requests when true
     TEST_MODE: process.env.TEST_MODE === 'true',
   },
+
+  // Payment Gateway Configuration
+  PAYMENT: {
+    // Default payment provider (stripe, razorpay, paypal, etc.)
+    DEFAULT_PROVIDER: process.env.PAYMENT_PROVIDER || 'stripe',
+
+    // Stripe Configuration
+    STRIPE: {
+      SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+      PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+      WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+      API_VERSION: '2024-11-20.acacia',
+    },
+
+    // Future providers can be added here:
+    // RAZORPAY: {
+    //   KEY_ID: process.env.RAZORPAY_KEY_ID,
+    //   KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
+    //   WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET,
+    // },
+
+    // Payment Settings
+    CURRENCY: process.env.PAYMENT_CURRENCY || 'USD',
+
+    // Test package for initial implementation
+    TEST_PACKAGE: {
+      amount: 1000, // $10.00 in cents
+      currency: 'usd',
+      creditsAwarded: 10,
+      description: 'Test package - 10 credits for $10',
+    },
+
+    // Success/Cancel URLs
+    SUCCESS_URL: process.env.PAYMENT_SUCCESS_URL || 'http://localhost:5173/payment/success',
+    CANCEL_URL: process.env.PAYMENT_CANCEL_URL || 'http://localhost:5173/payment/cancel',
+  },
 };
 
 module.exports = config;

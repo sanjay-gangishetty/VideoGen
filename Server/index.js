@@ -11,6 +11,7 @@ const { disconnectPrisma } = require('./db/prisma');
 const videoRoutes = require('./routes/videoRoutes');
 const creditRoutes = require('./routes/creditRoutes');
 const authRoutes = require('./routes/authRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 // Initialize Express app
 const app = express();
@@ -21,6 +22,13 @@ app.use(cors({
   origin: config.AUTH.FRONTEND_URL,
   credentials: true,
 }));
+
+// Raw body parsing for webhook signature verification
+// Must come before express.json() middleware
+app.use('/api/payment/webhook', express.raw({ type: 'application/json' }), (req, res, next) => {
+  req.rawBody = req.body;
+  next();
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -78,6 +86,13 @@ app.get('/', (req, res) => {
           add: 'POST /api/credits/add',
           history: 'GET /api/credits/history',
         },
+        payment: {
+          checkout: 'POST /api/payment/checkout',
+          success: 'GET /api/payment/success',
+          cancel: 'GET /api/payment/cancel',
+          webhook: 'POST /api/payment/webhook',
+          history: 'GET /api/payment/history',
+        },
       },
     },
     availableServices: ['heygen', 'veo3', 'kie'],
@@ -90,6 +105,7 @@ app.use('/auth', authRoutes);
 // API Routes
 app.use('/api/videos', videoRoutes);
 app.use('/api/credits', creditRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -129,10 +145,12 @@ async function startServer() {
   ├─ API Docs: http://localhost:${PORT}/
   ├─ Auth: http://localhost:${PORT}/auth/google
   ├─ Videos API: http://localhost:${PORT}/api/videos
-  └─ Credits API: http://localhost:${PORT}/api/credits
+  ├─ Credits API: http://localhost:${PORT}/api/credits
+  └─ Payment API: http://localhost:${PORT}/api/payment
 
   🎥 Available Services: heygen, veo3, kie
   💰 Credit System: Enabled
+  💳 Payment Gateway: ${config.PAYMENT.DEFAULT_PROVIDER}
   🔐 Authentication: Google OAuth ${config.AUTH.TEST_MODE ? '(TEST MODE)' : '(Enabled)'}
 
   Press CTRL+C to stop

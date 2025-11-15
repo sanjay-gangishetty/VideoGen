@@ -26,6 +26,13 @@ enum VideoStatus {
   CANCELLED
 }
 
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
 // Models
 model User {
   id        Int      @id @default(autoincrement())
@@ -42,6 +49,7 @@ model User {
   // Relations
   wallet    Wallet?
   videoLogs VideoLog[]
+  payments  Payment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -80,5 +88,33 @@ model VideoLog {
 
   @@index([userId])
   @@index([status])
+  @@index([createdAt])
+}
+
+model Payment {
+  id                 Int            @id @default(autoincrement())
+  userId             Int
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  amount             Decimal        @db.Decimal(10, 2)
+  currency           String         @default("USD")
+  creditsAwarded     Int
+  status             PaymentStatus  @default(PENDING)
+
+  // Payment gateway fields
+  paymentGateway     String         // e.g., "stripe", "razorpay", etc.
+  gatewayPaymentId   String?        @unique // payment_intent_xxx from Stripe
+  gatewaySessionId   String?        @unique // checkout_session_xxx from Stripe
+
+  // Metadata for extensibility
+  metadata           Json?          // Store any additional provider-specific data
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([gatewayPaymentId])
+  @@index([gatewaySessionId])
   @@index([createdAt])
 }
