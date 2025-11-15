@@ -71,7 +71,7 @@ const AddCreditsModal = ({ onClose, onSuccess }) => {
   const calculatedPrice = currentAmount > 0 ? calculatePrice(currentAmount) : '0.00';
 
   return (
-    <Modal onClose={onClose} showCloseButton={true}>
+    <Modal isOpen={true} onClose={onClose} showCloseButton={true}>
       <div className="add-credits-modal">
         <h2 className="modal-title">Add Credits</h2>
         <p className="modal-subtitle">
