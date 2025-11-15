@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import Navbar from './components/Navbar';
+import Hero from './components/Hero';
 import ImageUpload from './components/ImageUpload';
 import VideoTypeSelector from './components/VideoTypeSelector';
 import CustomizationPanel from './components/CustomizationPanel';
@@ -58,14 +59,9 @@ function App() {
       <Navbar />
 
       <main className="main-content">
-        <div className="container">
-          <div className="hero-section">
-            <h1 className="hero-title">Transform Images into Stunning Videos</h1>
-            <p className="hero-subtitle">
-              Upload your images, choose your style, and let AI create professional videos
-            </p>
-          </div>
+        <Hero />
 
+        <div className="container">
           <ImageUpload onImagesChange={setUploadedImages} />
 
           <VideoTypeSelector onTypeSelect={setSelectedVideoType} />
