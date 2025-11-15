@@ -163,7 +163,7 @@ export const fetchPaymentHistory = async (limit = 20, offset = 0) => {
 export const createCheckoutSession = async (amount) => {
   return await apiFetch('/api/payment/checkout', {
     method: 'POST',
-    body: JSON.stringify({ amount }),
+    body: JSON.stringify({ credits: amount }),
   });
 };
 

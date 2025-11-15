@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AddCreditsModal from './AddCreditsModal';
 import './Navbar.css';
 
 const Navbar = () => {
   const { user, loading, isAuthenticated, login, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
-  const [processingPayment, setProcessingPayment] = useState(false);
+  const [showAddCreditsModal, setShowAddCreditsModal] = useState(false);
 
   const features = [
     { name: 'Upload'},
@@ -20,33 +21,12 @@ const Navbar = () => {
     logout();
   };
 
-  const handleAddCredits = async () => {
-    try {
-      setProcessingPayment(true);
+  const handleAddCredits = () => {
+    setShowAddCreditsModal(true);
+  };
 
-      // Call the checkout API
-      const response = await fetch('http://localhost:3000/api/payment/checkout', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.success && data.data.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.data.url;
-      } else {
-        alert('Failed to create checkout session. Please try again.');
-        setProcessingPayment(false);
-      }
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-      alert('An error occurred. Please try again.');
-      setProcessingPayment(false);
-    }
+  const handleCloseModal = () => {
+    setShowAddCreditsModal(false);
   };
 
   return (
@@ -95,21 +75,19 @@ const Navbar = () => {
                 <button
                   className="btn btn-add-credits"
                   onClick={handleAddCredits}
-                  disabled={processingPayment}
                   style={{
                     backgroundColor: '#22c55e',
                     color: 'white',
                     padding: '8px 16px',
                     borderRadius: '8px',
                     border: 'none',
-                    cursor: processingPayment ? 'not-allowed' : 'pointer',
+                    cursor: 'pointer',
                     fontSize: '14px',
                     fontWeight: '600',
                     marginRight: '16px',
-                    opacity: processingPayment ? 0.6 : 1,
                   }}
                 >
-                  {processingPayment ? 'Processing...' : '💳 Add Credits'}
+                  💳 Add Credits
                 </button>
                 <div
                   className="user-profile"
@@ -155,6 +133,14 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+
+      {/* Add Credits Modal */}
+      {showAddCreditsModal && (
+        <AddCreditsModal
+          onClose={handleCloseModal}
+          onSuccess={handleCloseModal}
+        />
+      )}
     </nav>
   );
 };

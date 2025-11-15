@@ -47,6 +47,13 @@ const AddCreditsModal = ({ onClose, onSuccess }) => {
       return;
     }
 
+    // Validate payment amount doesn't exceed $1000 limit
+    const paymentAmount = amount * CREDITS_CONFIG.PRICE_PER_CREDIT;
+    if (paymentAmount > CREDITS_CONFIG.MAX_PAYMENT_AMOUNT) {
+      setError(`Maximum payment amount is $${CREDITS_CONFIG.MAX_PAYMENT_AMOUNT}`);
+      return;
+    }
+
     setLoading(true);
     setError('');
 

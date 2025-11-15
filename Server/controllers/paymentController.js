@@ -22,21 +22,45 @@ class PaymentController {
   async createCheckoutSession(req, res) {
     try {
       const userId = req.user.id;
+      const { credits } = req.body;
 
       console.log(`💳 Creating checkout session for user: ${userId}`);
 
-      // Get test package configuration
-      const packageConfig = config.PAYMENT.TEST_PACKAGE;
+      // Validate credits input
+      if (!credits || typeof credits !== 'number' || credits <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid credits amount',
+          message: 'Credits must be a positive number',
+        });
+      }
+
+      // Calculate amount based on credits (1 credit = $0.01, so 100 credits = $1)
+      const PRICE_PER_CREDIT = 0.01;
+      const amountInDollars = credits * PRICE_PER_CREDIT;
+      const amountInCents = Math.round(amountInDollars * 100);
+
+      // Validate amount doesn't exceed $1000 limit
+      const MAX_PAYMENT_AMOUNT = 1000;
+      if (amountInDollars > MAX_PAYMENT_AMOUNT) {
+        return res.status(400).json({
+          success: false,
+          error: 'Payment amount exceeds limit',
+          message: `Maximum payment amount is $${MAX_PAYMENT_AMOUNT}`,
+        });
+      }
+
+      console.log(`💰 Credits: ${credits}, Amount: $${amountInDollars} (${amountInCents} cents)`);
 
       // Create payment service instance (default provider from config)
       const paymentService = PaymentFactory.createService(config.PAYMENT.DEFAULT_PROVIDER);
 
-      // Prepare checkout parameters
+      // Prepare checkout parameters with custom amount
       const checkoutParams = {
-        amount: packageConfig.amount,
-        currency: packageConfig.currency,
+        amount: amountInCents,
+        currency: 'usd',
         userId: userId,
-        creditsAwarded: packageConfig.creditsAwarded,
+        creditsAwarded: credits,
         successUrl: `${config.PAYMENT.SUCCESS_URL}?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: config.PAYMENT.CANCEL_URL,
       };
@@ -47,14 +71,14 @@ class PaymentController {
       // Create payment record in database
       const payment = await Payment.create({
         userId: userId,
-        amount: packageConfig.amount / 100, // Convert cents to dollars for DB
-        currency: packageConfig.currency,
-        creditsAwarded: packageConfig.creditsAwarded,
+        amount: amountInDollars, // Store in dollars for DB
+        currency: 'usd',
+        creditsAwarded: credits,
         paymentGateway: config.PAYMENT.DEFAULT_PROVIDER,
         gatewaySessionId: sessionResponse.data.sessionId,
         metadata: {
-          packageType: 'test',
-          description: packageConfig.description,
+          packageType: 'custom',
+          description: `${credits} credits for $${amountInDollars.toFixed(2)}`,
         },
       });
 
@@ -67,9 +91,9 @@ class PaymentController {
           sessionId: sessionResponse.data.sessionId,
           url: sessionResponse.data.url,
           paymentId: payment.id,
-          amount: packageConfig.amount,
-          currency: packageConfig.currency,
-          creditsAwarded: packageConfig.creditsAwarded,
+          amount: amountInCents,
+          currency: 'usd',
+          creditsAwarded: credits,
         },
       });
     } catch (error) {

@@ -10,6 +10,9 @@ const CREDITS_CONFIG = {
   MIN_CREDITS: 10,
   MAX_CREDITS: 100000,
 
+  // Maximum payment amount in dollars
+  MAX_PAYMENT_AMOUNT: 1000,
+
   // Currency
   CURRENCY: 'USD',
 };
