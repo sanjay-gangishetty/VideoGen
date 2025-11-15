@@ -9,13 +9,6 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showAddCreditsModal, setShowAddCreditsModal] = useState(false);
 
-  const features = [
-    { name: 'Upload'},
-    { name: 'Video Types'},
-    { name: 'Customize'},
-    { name: 'Generate'}
-  ];
-
   const handleLogout = () => {
     setShowDropdown(false);
     logout();
@@ -39,44 +32,15 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-right">
-          <ul className="navbar-menu">
-            {features.map((feature, index) => (
-              <li key={index} className="navbar-item">
-                <span className="navbar-link">
-                  <span className="navbar-feature-name">{feature.name}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="navbar-auth">
-            {loading ? (
-              <div className="navbar-loading">Loading...</div>
-            ) : isAuthenticated && user ? (
-              <div className="navbar-user">
-                <Link to="/wallet" style={{ textDecoration: 'none' }}>
-                  <button
-                    className="btn btn-wallet"
-                    style={{
-                      backgroundColor: '#8B5CF6',
-                      color: 'white',
-                      padding: '8px 16px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      marginRight: '12px',
-                    }}
-                  >
-                    💼 Wallet
-                  </button>
-                </Link>
+          {loading ? (
+            <div className="navbar-loading">Loading...</div>
+          ) : isAuthenticated && user ? (
+            <>
+              <Link to="/wallet" style={{ textDecoration: 'none' }}>
                 <button
-                  className="btn btn-add-credits"
-                  onClick={handleAddCredits}
+                  className="btn btn-wallet"
                   style={{
-                    backgroundColor: '#22c55e',
+                    backgroundColor: '#8B5CF6',
                     color: 'white',
                     padding: '8px 16px',
                     borderRadius: '8px',
@@ -84,53 +48,68 @@ const Navbar = () => {
                     cursor: 'pointer',
                     fontSize: '14px',
                     fontWeight: '600',
-                    marginRight: '16px',
                   }}
                 >
-                  💳 Add Credits
+                  💼 Wallet
                 </button>
-                <div
-                  className="user-profile"
-                  onClick={() => setShowDropdown(!showDropdown)}
-                >
-                  <img
-                    src={user.image || 'https://via.placeholder.com/40'}
-                    alt={user.name || 'User'}
-                    className="user-avatar"
-                  />
-                  <div className="user-info">
-                    <span className="user-name">{user.name || 'User'}</span>
-                    <span className="user-credits">
-                      💰 {user.wallet?.currentBalance || 0} credits
-                    </span>
-                  </div>
-                  <span className="dropdown-arrow">▼</span>
-                </div>
-
-                {showDropdown && (
-                  <div className="user-dropdown">
-                    <div className="dropdown-item user-email">
-                      {user.email}
-                    </div>
-                    <div className="dropdown-divider"></div>
-                    <button
-                      className="dropdown-item dropdown-logout"
-                      onClick={handleLogout}
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
+              </Link>
               <button
-                className="btn btn-primary login-btn"
-                onClick={login}
+                className="btn btn-add-credits"
+                onClick={handleAddCredits}
+                style={{
+                  backgroundColor: '#22c55e',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                }}
               >
-                Login with Google
+                💳 Add Credits
               </button>
-            )}
-          </div>
+              <div
+                className="user-profile"
+                onClick={() => setShowDropdown(!showDropdown)}
+              >
+                <img
+                  src={user.image || 'https://via.placeholder.com/40'}
+                  alt={user.name || 'User'}
+                  className="user-avatar"
+                />
+                <div className="user-info">
+                  <span className="user-name">{user.name || 'User'}</span>
+                  <span className="user-credits">
+                    💰 {user.wallet?.currentBalance || 0} credits
+                  </span>
+                </div>
+                <span className="dropdown-arrow">▼</span>
+              </div>
+
+              {showDropdown && (
+                <div className="user-dropdown">
+                  <div className="dropdown-item user-email">
+                    {user.email}
+                  </div>
+                  <div className="dropdown-divider"></div>
+                  <button
+                    className="dropdown-item dropdown-logout"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <button
+              className="btn btn-primary login-btn"
+              onClick={login}
+            >
+              Login with Google
+            </button>
+          )}
         </div>
       </div>
 
